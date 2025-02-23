@@ -12,7 +12,7 @@ export class AuthService {
   constructor(private http: HttpClient) { }
 
   login(username: string, password: string): Observable<any> {
-    return this.http.post<any>(`${this.baseUrl}/auth/login/`, { username, password });
+    return this.http.post<any>(`${this.baseUrl}/login/`, { username, password });
   }
 
   logout() {

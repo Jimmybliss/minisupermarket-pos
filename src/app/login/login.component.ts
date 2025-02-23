@@ -3,12 +3,10 @@ import { FormsModule } from '@angular/forms';
 import { AuthService } from '../services/auth.service';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { provideHttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  providers: [AuthService],
   imports: [FormsModule, CommonModule],
   templateUrl: './login.component.html',
   styleUrl: './login.component.sass'

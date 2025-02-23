@@ -21,9 +21,9 @@ describe('AppComponent', () => {
   });
 
   it('should render title', () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    fixture.detectChanges();
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Hello, minisupermarket-pos');
-  });
+  const fixture = TestBed.createComponent(AppComponent);
+  fixture.detectChanges(); // Refresh component state
+  const compiled = fixture.nativeElement as HTMLElement;
+  expect(compiled.querySelector('h1')?.textContent?.trim()).toBe('Hello, minisupermarket-pos');
+});
 });
