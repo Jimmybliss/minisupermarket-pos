@@ -19,23 +19,30 @@ export class LoginComponent {
   constructor(private authService: AuthService, private router: Router) { }
 
   onLogin(): void {
-    this.authService.login(this.username, this.password).subscribe(
-      res => {
+    this.authService.login(this.username, this.password).subscribe({
+      next: (res) => {
         // Save token to local storage
         this.authService.setToken(res.token);
-        // Navigate to the dashboard based on user role
-        const role = res.user.role;
+    
+        // Extract role correctly from the response
+        const role = res.role;  // No need to access `res.User.role`
+    
+        // Navigate based on user role
         if (role === 'Admin') {
           this.router.navigate(['/admin']);
         } else if (role === 'Supervisor') {
           this.router.navigate(['/supervisor']);
         } else {
-          this.router.navigate(['/user']);
+          this.router.navigate(['/sales']);
         }
       },
-      err => {
-        this.errorMessage = 'invalid credentials, please try again';
+      error: (err) => {
+        this.errorMessage = 'Invalid credentials, please try again';
+      },
+      complete: () => {
+        console.log('Login request completed.');
       }
-    );
+    });
+    
   }
 }
