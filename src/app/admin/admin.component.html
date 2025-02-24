@@ -1,13 +1,18 @@
-<mat-sidenav-container>
-    <mat-sidenav mode="side" opened>
-      <mat-nav-list>
-        <a mat-list-item routerLink="/users">User Management</a>
-        <a mat-list-item routerLink="/products">Product Management</a>
-        <a mat-list-item routerLink="/reports">Reports</a>
-      </mat-nav-list>
-    </mat-sidenav>
-    <mat-sidenav-content>
-      <router-outlet></router-outlet>
-    </mat-sidenav-content>
-  </mat-sidenav-container>
-  
+<div class="sidenav-container" style="display: flex; height: 100vh;">
+  <nav class="sidenav" style="width: 200px; background-color: #76dfff; padding: 1rem;">
+    <ul style="list-style: none; padding: 0;">
+      <li style="margin-bottom: 1rem;">
+        <a href="/users" style="text-decoration: none; color: inherit;">User Management</a>
+      </li>
+      <li style="margin-bottom: 1rem;">
+        <a href="/products" style="text-decoration: none; color: inherit;">Product Management</a>
+      </li>
+      <li>
+        <a href="/reports" style="text-decoration: none; color: inherit;">Reports</a>
+      </li>
+    </ul>
+  </nav>
+  <main class="sidenav-content" style="flex: 1; padding: 1rem;">
+    <router-outlet></router-outlet>
+  </main>
+</div>
