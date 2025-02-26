@@ -7,6 +7,7 @@ import { RouterModule } from '@angular/router';
 
 import { serverRoutes } from './app.routes.server';
 import { AppComponent } from './app.component';
+import { AuthInterceptor } from './interceptors/auth.service';
 
 @NgModule({
   imports: [

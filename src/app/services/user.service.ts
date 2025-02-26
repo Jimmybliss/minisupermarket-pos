@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { AuthService } from './auth.service';
+
 
 @Injectable({
   providedIn: 'root'
@@ -8,21 +10,26 @@ import { Observable } from 'rxjs';
 export class UserService {
   private apiUrl = 'http://127.0.0.1:8000/api/users/';
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private authService: AuthService) { }
 
-  getUsers(): Observable<any> {
-    return this.http.get(this.apiUrl);
+  private getHeaders(): HttpHeaders {
+    const token = this.authService.getToken();
+    return new HttpHeaders({ 'Authorization': `Token ${token}` });
+  }
+
+  getUsers(): Observable<any[]> {
+    return this.http.get<any[]>(this.apiUrl, { headers: this.getHeaders() });
   }
 
   createUser(userData: any): Observable<any> {
-    return this.http.post(this.apiUrl, userData);
+    return this.http.post<any>(this.apiUrl, userData, { headers: this.getHeaders() });
   }
 
   updateUser(userId: number, userData: any): Observable<any> {
-    return this.http.put(`${this.apiUrl}${userId}/`, userData);
+    return this.http.put<any>(`${this.apiUrl}${userId}/`, userData, { headers: this.getHeaders() });
   }
 
   deleteUser(userId: number): Observable<any> {
-    return this.http.delete(`${this.apiUrl}${userId}/`);
+    return this.http.delete<any>(`${this.apiUrl}${userId}/`, { headers: this.getHeaders() });
   }
 }

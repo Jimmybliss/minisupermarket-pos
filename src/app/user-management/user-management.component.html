@@ -1,18 +1,57 @@
-<p>user-management works!</p>
-<h2>User Management</h2>
-<table>
-  <tr>
-    <th>Username</th>
-    <th>Email</th>
-    <th>Role</th>
-    <th>Actions</th>
-  </tr>
-  <tr *ngFor="let user of users">
-    <td>{{ user.username }}</td>
-    <td>{{ user.email }}</td>
-    <td>{{ user.role }}</td>
-    <td>
-      <button (click)="deactivateUser(user.id)" *ngIf="user.is_active">Deactivate</button>
-    </td>
-  </tr>
-</table>
+<div>
+  <h2>User Management</h2>
+
+  <!-- User List -->
+  <table border="1">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Username</th>
+        <th>Email</th>
+        <th>Role</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let user of users">
+        <td>{{ user.id }}</td>
+        <td>{{ user.username }}</td>
+        <td>{{ user.email }}</td>
+        <td>{{ user.role }}</td>
+        <td>
+          <button (click)="selectUser(user)">Edit</button>
+          <button (click)="deleteUser(user.id)">Delete</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Create New User -->
+  <h3>Create User</h3>
+  <form (ngSubmit)="createUser()">
+    <input [(ngModel)]="newUser.username" name="username" placeholder="Username" required />
+    <input [(ngModel)]="newUser.email" name="email" placeholder="Email" required />
+    <input [(ngModel)]="newUser.password" name="password" type="password" placeholder="Password" required />
+    <select [(ngModel)]="newUser.role" name="role" required>
+      <option value="Administrator">Admin</option>
+      <option value="Supervisor">Supervisor</option>
+      <option value="Salesperson">Salesperson</option>
+    </select>
+    <button type="submit">Create</button>
+  </form>
+
+  <!-- Update User -->
+  <div *ngIf="selectedUser">
+    <h3>Edit User</h3>
+    <form (ngSubmit)="updateUser()">
+      <input [(ngModel)]="selectedUser.username" name="username" placeholder="Username" required />
+      <input [(ngModel)]="selectedUser.email" name="email" placeholder="Email" required />
+      <select [(ngModel)]="selectedUser.role" name="role" required>
+        <option value="Administrator">Administrator</option>
+        <option value="Supervisor">Supervisor</option>
+        <option value="Salesperson">Salesperson</option>
+      </select>
+      <button type="submit">Update</button>
+    </form>
+  </div>
+</div>
