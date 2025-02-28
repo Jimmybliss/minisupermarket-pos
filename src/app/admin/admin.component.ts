@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
-import { MatSidenavModule } from '@angular/material/sidenav'
-import { MatNavList } from '@angular/material/list'
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatListModule } from '@angular/material/list';
+import { MatButtonModule } from '@angular/material/button';
 import { RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
 
@@ -9,7 +10,8 @@ import { CommonModule } from '@angular/common';
   imports: [ 
     CommonModule,
     MatSidenavModule, 
-    MatNavList,
+    MatListModule,
+    MatButtonModule,
     RouterOutlet ],
   templateUrl: './admin.component.html',
   styleUrl: './admin.component.sass'

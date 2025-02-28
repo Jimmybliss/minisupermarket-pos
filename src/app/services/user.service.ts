@@ -32,4 +32,8 @@ export class UserService {
   deleteUser(userId: number): Observable<any> {
     return this.http.delete<any>(`${this.apiUrl}${userId}/`, { headers: this.getHeaders() });
   }
+
+  activateUser(userId: number): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}${userId}/activate/`, {}, { headers: this.getHeaders() });
+  }
 }

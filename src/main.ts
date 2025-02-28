@@ -9,6 +9,7 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import { AuthInterceptor } from './app/interceptors/auth.service';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 
+
 bootstrapApplication(AppComponent, {
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },

@@ -4,10 +4,30 @@ import { CommonModule } from '@angular/common';
 import { AuthService } from '../services/auth.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
+import { MatTableModule } from '@angular/material/table';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatListModule } from '@angular/material/list';
+import { MatDialog } from '@angular/material/dialog';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatIconModule } from '@angular/material/icon';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { UserDialogComponent } from '../user-dialog/user-dialog.component';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
 @Component({
   selector: 'app-user-management',
-  imports: [ CommonModule, FormsModule ],
+  imports: [
+    MatSlideToggleModule,
+    MatInputModule,
+    MatSelectModule,
+    MatIconModule,
+    MatFormFieldModule,
+    MatTableModule,
+    MatSidenavModule,
+    MatListModule,
+    CommonModule, 
+    FormsModule ],
   templateUrl: './user-management.component.html',
   styleUrl: './user-management.component.sass'
 })
@@ -17,11 +37,13 @@ export class UserManagementComponent implements OnInit {
   users: any[] = [];
   newUser = { username: '', email: '', password: '', role: '' };
   selectedUser: any = null;
+  displayedColumns: string[] = ['id', 'username', 'email', 'role', 'is_active', 'actions'];
 
   constructor(
     private authService: AuthService, 
     private http: HttpClient, 
-    private userService: UserService) {}
+    private userService: UserService,
+    private dialog: MatDialog) {}
 
   ngOnInit(): void {
     this.loadUsers();
@@ -41,33 +63,28 @@ export class UserManagementComponent implements OnInit {
     );
   }
 
-  deactivateUser(userId: number) {
-    const token = this.authService.getToken();
-    const headers = new HttpHeaders().set('Authorization', `Token ${token}`);
-
-    this.userService.updateUser(userId, { is_active: false }).subscribe(() => {
-      this.loadUsers();
-    });
+  toggleActive() {
+    this.userService.activateUser(this.selectedUser.id).subscribe(
+      (res) => {
+        alert('User activated successfully');
+        this.loadUsers();
+        this.selectedUser = null;
+      },
+      (error) => {
+        console.error('Error activating user', error);
+      }
+    );
   }
 
-  activateUser(userId: number) {
-    const token = this.authService.getToken();
-    const headers = new HttpHeaders().set('Authorization', `Token ${token}`);
-
-    this.userService.updateUser(userId, { is_active: true }).subscribe(() => {
-      this.loadUsers();
-    });
-  }
-
-  createUser() {
+  createUser(newUser: any) {
     const token = this.authService.getToken();
     const headers = new HttpHeaders().set('Authorization', `Token ${token}`);
   
-    // Debugging: Log newUser data
-    console.log('Creating user with data:', this.newUser);
+    console.log('Creating user with data:', newUser); // Log the newUser data
   
-    this.userService.createUser(this.newUser).subscribe({ //http.post<any>(this.BaseUrl, this.newUser, { headers }).subscribe({
+    this.userService.createUser(newUser).subscribe({
       next: () => {
+        console.log('User created successfully'); // Log success
         this.newUser = { username: '', email: '', password: '', role: 'user' };
         this.loadUsers();
       },
@@ -83,22 +100,28 @@ export class UserManagementComponent implements OnInit {
     this.selectedUser = { ...user };
   }
 
-  updateUser() {
+  updateUser(updatedUser: any) {
     const token = this.authService.getToken();
     const headers = new HttpHeaders().set('Authorization', `Token ${token}`);
 
-    if (this.selectedUser) {
-      this.userService.updateUser(this.selectedUser.id, this.selectedUser).subscribe(
-        (res) => {
-          alert('User updated successfully');
-          this.loadUsers();
-          this.selectedUser = null;
-        },
-        (error) => {
-          console.error('Error updating user', error);
-        }
-      );
+    if (!updatedUser.id) {
+      console.error('Error: updatedUser.id is undefined');
+      return;
     }
+
+    console.log('Updating user with data:', updatedUser); // Log the updatedUser data
+
+    this.userService.updateUser(updatedUser.id, updatedUser).subscribe(
+      (res) => {
+        console.log('User updated successfully'); // Log success
+        alert('User updated successfully');
+        this.loadUsers();
+        this.selectedUser = null;
+      },
+      (error) => {
+        console.error('Error updating user', error);
+      }
+    );
   }
 
   deleteUser(userId: number): void {
@@ -116,5 +139,35 @@ export class UserManagementComponent implements OnInit {
         }
       );
     }
+  }
+
+  openCreateDialog() {
+    const dialogRef = this.dialog.open(UserDialogComponent, {
+      width: '400px',
+      data: { user: { username: '', email: '', password: '', role: 'user' } }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log('Create dialog closed with result:', result); // Log the result
+      if (result) {
+        this.createUser(result);
+      }
+    });
+  }
+
+  openEditDialog(user: any) {
+    console.log('Opening edit dialog for user:', user); // Log the user data before opening the dialog
+
+    const dialogRef = this.dialog.open(UserDialogComponent, {
+      width: '400px',
+      data: { user: { ...user } }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log('Edit dialog closed with result:', result); // Log the result
+      if (result) {
+        this.updateUser(result);
+      }
+    });
   }
 }

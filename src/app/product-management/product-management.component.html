@@ -1,17 +1,89 @@
-<h2>Product Management</h2>
-<table>
-  <tr>
-    <th>Name</th>
-    <th>Barcode</th>
-    <th>Price</th>
-    <th>Actions</th>
-  </tr>
-  <tr *ngFor="let product of products">
-    <td>{{ product.name }}</td>
-    <td>{{ product.barcode }}</td>
-    <td>{{ product.price }}</td>
-    <td>
-      <button (click)="deleteProduct(product.id)">Delete</button>
-    </td>
-  </tr>
-</table>
+<div class="container">
+  <h2>Product Management</h2>
+
+  <!--Product Add-->
+  <button mat-fab color="primary" class="add-btn" (click)="openCreateDialog()">
+    <mat-icon>add</mat-icon>
+  </button>
+
+  <!--Product Upload-->
+  <div class="upload-section">
+    <input type="file" (change)="uploadCSV($event)" accept=".csv" hidden #fileInput>
+    <button mat-raised-button color="primary" (click)="fileInput.click()">
+      Choose CSV
+    </button>
+    <button mat-raised-button color="primary" (click)="submitCSV()" [disabled]="!csvFile">
+      Upload CSV
+    </button>
+  </div>
+
+  <!--Category Manager-->
+  <div class="upload-section">
+    <button mat-raised-button color="primary" href="/#/admin//category-management">
+      Category Manager
+    </button>
+  </div>
+
+  <!--Product Table-->
+  <table mat-table [dataSource]="products" class="mat-elevation-z8" *ngIf="products.length > 0">
+    <ng-container matColumnDef="id">
+      <th mat-header-cell *matHeaderCellDef> ID </th>
+      <td mat-cell *matCellDef="let product"> {{ product.id }} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef> Product Name </th>
+      <td mat-cell *matCellDef="let product"> {{ product.name }} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="category">
+      <th mat-header-cell *matHeaderCellDef> Category </th>
+      <td mat-cell *matCellDef="let product"> {{ product.category }} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="description">
+      <th mat-header-cell *matHeaderCellDef> Description </th>
+      <td mat-cell *matCellDef="let product"> {{ product.description }} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="price">
+      <th mat-header-cell *matHeaderCellDef> price </th>
+      <td mat-cell *matCellDef="let product"> {{ product.price }} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="barcode">
+      <th mat-header-cell *matHeaderCellDef> Barcode </th>
+      <td mat-cell *matCellDef="let product"> {{ product.barcode }} </td>
+    </ng-container>
+    
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef> Actions </th>
+      <td mat-cell *matCellDef="let product">
+        <button mat-button color="primary" (click)="openEditDialog(product)">Edit</button>
+        <button mat-button color="warn" (click)="deleteProduct(product.id)">Delete</button>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="is_active">
+      <th mat-header-cell *matHeaderCellDef> Active </th>
+      <td mat-cell *matCellDef="let product">
+        <mat-slide-toggle [checked]="product.is_active" (change)="toggleActive(product.id)"></mat-slide-toggle>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="created_at">
+      <th mat-header-cell *matHeaderCellDef> Created </th>
+      <td mat-cell *matCellDef="let product"> {{ product.created_at }} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="updated_at">
+      <th mat-header-cell *matHeaderCellDef> Updated </th>
+      <td mat-cell *matCellDef="let product"> {{ product.updated_at }} </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    
+
+  </table>
+</div>
