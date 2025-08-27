@@ -1,11 +1,24 @@
 import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatListModule } from '@angular/material/list';
+
 
 @Component({
   selector: 'app-supervisor',
-  imports: [],
+  imports: [
+    CommonModule,
+    MatSidenavModule,
+    MatListModule
+
+  ],
   templateUrl: './supervisor.component.html',
-  styleUrl: './supervisor.component.sass'
+  styleUrls: ['./supervisor.component.css']
 })
 export class SupervisorComponent {
+  view: string = 'dashboard';
 
+  setView(view: string) {
+    this.view = view;
+  }
 }

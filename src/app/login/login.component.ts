@@ -3,20 +3,32 @@ import { FormsModule } from '@angular/forms';
 import { AuthService } from '../services/auth.service';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [FormsModule, CommonModule],
+  imports: [
+    FormsModule, 
+    CommonModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule
+  ],
   templateUrl: './login.component.html',
-  styleUrl: './login.component.sass'
+  styleUrls: ['./login.component.sass']
 })
 export class LoginComponent {
   username: string = '';
   password: string = '';
   errorMessage: string = '';
 
-  constructor(private authService: AuthService, private router: Router) { }
+  constructor(
+    private authService: AuthService, 
+    private router: Router,
+  ) { }
 
   onLogin(): void {
     this.authService.login(this.username, this.password).subscribe({
@@ -33,7 +45,7 @@ export class LoginComponent {
         } else if (role === 'Supervisor') {
           this.router.navigate(['/supervisor']);
         } else {
-          this.router.navigate(['/sales']);
+          this.router.navigate(['/salesperson']);
         }
       },
       error: (err) => {
@@ -43,6 +55,5 @@ export class LoginComponent {
         console.log('Login request completed.');
       }
     });
-    
   }
 }

@@ -1,1 +1,38 @@
-<p>supervisor works!</p>
+<div class="supervisor-container">
+    <!-- Sidebar Navigation -->
+    <mat-sidenav-container>
+      <mat-sidenav mode="side" opened class="sidebar">
+        <mat-nav-list>
+          <mat-list-item (click)="setView('dashboard')">Dashboard</mat-list-item>
+          <mat-list-item (click)="setView('sales')">Sales Monitoring</mat-list-item>
+          <mat-list-item (click)="setView('cashiers')">Cashier Management</mat-list-item>
+          <mat-list-item (click)="setView('inventory')">Stock Alerts</mat-list-item>
+          <mat-list-item (click)="setView('reports')">Reports & Analytics</mat-list-item>
+        </mat-nav-list>
+      </mat-sidenav>
+  
+      <!-- Main Content -->
+      <mat-sidenav-content class="content">
+        <ng-container *ngIf="view === 'dashboard'">
+         
+        </ng-container>
+  
+        <ng-container *ngIf="view === 'sales'">
+          
+        </ng-container>
+  
+        <ng-container *ngIf="view === 'cashiers'">
+          
+        </ng-container>
+  
+        <ng-container *ngIf="view === 'inventory'">
+         
+        </ng-container>
+  
+        <ng-container *ngIf="view === 'reports'">
+          
+        </ng-container>
+      </mat-sidenav-content>
+    </mat-sidenav-container>
+  </div>
+  

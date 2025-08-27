@@ -1,1 +1,49 @@
-<p>settings works!</p>
+<div class="container">
+    <h2>System Settings</h2>
+  
+    <form #settingsForm="ngForm" (ngSubmit)="saveSettings()">
+      <mat-form-field class="full-width">
+        <mat-label>Business Name</mat-label>
+        <input matInput [(ngModel)]="settings.business_name" name="business_name" required>
+      </mat-form-field>
+  
+      <mat-form-field class="full-width">
+        <mat-label>Business Address</mat-label>
+        <textarea matInput [(ngModel)]="settings.business_address" name="business_address"></textarea>
+      </mat-form-field>
+  
+      <mat-form-field class="full-width">
+        <mat-label>Contact Email</mat-label>
+        <input matInput type="email" [(ngModel)]="settings.contact_email" name="contact_email">
+      </mat-form-field>
+  
+      <mat-form-field class="full-width">
+        <mat-label>Tax Percentage (%)</mat-label>
+        <input matInput type="number" [(ngModel)]="settings.tax_percentage" name="tax_percentage">
+      </mat-form-field>
+  
+      <mat-form-field class="full-width">
+        <mat-label>Default Discount (%)</mat-label>
+        <input matInput type="number" [(ngModel)]="settings.default_discount" name="default_discount">
+      </mat-form-field>
+  
+      <mat-form-field class="full-width">
+        <mat-label>Receipt Message</mat-label>
+        <textarea matInput [(ngModel)]="settings.receipt_message" name="receipt_message"></textarea>
+      </mat-form-field>
+  
+      <mat-slide-toggle [(ngModel)]="settings.allow_negative_stock" name="allow_negative_stock">
+        Allow Negative Stock
+      </mat-slide-toggle>
+  
+      <mat-slide-toggle [(ngModel)]="settings.enable_notifications" name="enable_notifications">
+        Enable Notifications
+      </mat-slide-toggle>
+  
+      <div class="button-group">
+        <button mat-button color="primary" type="submit">Save Settings</button>
+        <button mat-button color="warn" (click)="resetToDefault()">Reset to Default</button>
+      </div>
+    </form>
+  </div>
+  

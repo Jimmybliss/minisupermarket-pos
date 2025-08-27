@@ -1,0 +1,31 @@
+<div class="salesperson-container">
+    <!-- Sidebar Navigation -->
+     <!-- Left navigation sidebar
+  <nav class="left-sidebar" aria-label="Main navigation">
+    <div class="nav-buttons">
+      <button mat-stroked-button class="nav-btn">HOME</button>
+      <button mat-stroked-button class="nav-btn">REPORT</button>
+    </div>
+    <div class="left-bottom">
+      <button mat-stroked-button class="nav-btn">LOGOUT</button>
+    </div>
+  </nav>-->
+    <mat-sidenav-container style="height: 100vh;">
+      <mat-sidenav mode="side" opened style="width: 200px; background-color: #dedede;"> 
+        <mat-nav-list>
+            <mat-list-item>
+                <a mat-button href="/#/salesperson/sales">Sales</a>
+            </mat-list-item>
+            <mat-list-item>
+                <a mat-button href="/#/salesperson/reports">Reports</a>
+              </mat-list-item>
+        </mat-nav-list>
+      </mat-sidenav>
+  
+      <!-- Content Area -->
+      <mat-sidenav-content style="padding: 1rem;">
+        <router-outlet></router-outlet>
+      </mat-sidenav-content>
+    </mat-sidenav-container>
+  </div>
+  

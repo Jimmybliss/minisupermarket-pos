@@ -33,8 +33,14 @@ export class CategoryManagerComponent implements OnInit {
   }
 
   loadCategories() {
-    this.categoryService.getCategories().subscribe(data => {
-      this.dataSource.data = data;
+    this.categoryService.getCategories().subscribe({
+      next: (data: any[]) => {
+        this.dataSource.data = data;
+      },
+      error: (err) => {
+        console.error('Error loading categories:', err);
+        // Show error notification
+      }
     });
   }
 
@@ -65,8 +71,11 @@ export class CategoryManagerComponent implements OnInit {
   }
 
   deleteCategory(categoryId: number) {
-    this.categoryService.deleteCategory(categoryId).subscribe(() => {
-      this.loadCategories();
-    });
+    if (confirm('Are you sure you want to delete this category?')) {
+      this.categoryService.deleteCategory(categoryId).subscribe({
+        next: () => this.loadCategories(),
+        error: (err) => console.error('Delete failed:', err)
+      });
+    }
   }
 }

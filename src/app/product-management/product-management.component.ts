@@ -7,7 +7,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSlideToggle } from '@angular/material/slide-toggle';
 import { ProductDialogComponent } from '../product-dialog/product-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
-
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-product-management',
@@ -16,7 +17,9 @@ import { MatDialog } from '@angular/material/dialog';
     CommonModule, 
     FormsModule,
     MatIconModule,
-    MatSlideToggle
+    MatSlideToggle,
+    MatSnackBarModule,
+    MatProgressSpinnerModule
    ],
   templateUrl: './product-management.component.html',
   styleUrls: ['./product-management.component.sass']
@@ -25,10 +28,12 @@ export class ProductManagementComponent implements OnInit {
   products: any[] = [];
   csvFile: File | null = null;
   displayedColumns: string[] = ['id', 'name', 'category', 'description', 'price', 'barcode', 'is_active', 'actions', 'created_at', 'updated_at'];
+  loading: boolean = false;
 
   constructor(
     private productService: ProductService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private snackBar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
@@ -36,8 +41,16 @@ export class ProductManagementComponent implements OnInit {
   }
 
   loadProducts() {
-    this.productService.getProducts().subscribe(data => {
-      this.products = data;
+    this.loading = true;
+    this.productService.getProducts().subscribe({
+      next: data => {
+        this.products = data;
+        this.loading = false;
+      },
+      error: () => {
+        this.loading = false;
+        this.snackBar.open('Failed to load products', 'Close', { duration: 3000 });
+      }
     });
   }
 
@@ -68,28 +81,60 @@ export class ProductManagementComponent implements OnInit {
   }
 
   createProduct(newProduct: any) {
-    this.productService.createProduct(newProduct).subscribe(() => {
-      this.loadProducts();
+    this.loading = true;
+    this.productService.createProduct(newProduct).subscribe({
+      next: () => {
+        this.snackBar.open('Product created successfully', 'Close', { duration: 2000 });
+        this.loadProducts();
+      },
+      error: () => {
+        this.loading = false;
+        this.snackBar.open('Failed to create product', 'Close', { duration: 3000 });
+      }
     });
   }
 
   updateProduct(updatedProduct: any) {
-    this.productService.updateProduct(updatedProduct.id, updatedProduct).subscribe(() => {
-      this.loadProducts();
+    this.loading = true;
+    this.productService.updateProduct(updatedProduct.id, updatedProduct).subscribe({
+      next: () => {
+        this.snackBar.open('Product updated', 'Close', { duration: 2000 });
+        this.loadProducts();
+      },
+      error: () => {
+        this.loading = false;
+        this.snackBar.open('Failed to update product', 'Close', { duration: 3000 });
+      }
     });
   }
 
   deleteProduct(productId: number) {
-    this.productService.deleteProduct(productId).subscribe(() => {
-      this.loadProducts();
+    this.loading = true;
+    this.productService.deleteProduct(productId).subscribe({
+      next: () => {
+        this.snackBar.open('Product deleted', 'Close', { duration: 2000 });
+        this.loadProducts();
+      },
+      error: () => {
+        this.loading = false;
+        this.snackBar.open('Failed to delete product', 'Close', { duration: 3000 });
+      }
     });
   }
 
   toggleActive(productId: number) {
     const product = this.products.find(p => p.id === productId);
     if (product) {
-      this.productService.updateProduct(productId, { is_active: !product.is_active }).subscribe(() => {
-        this.loadProducts();
+      this.loading = true;
+      this.productService.updateProduct(productId, { is_active: !product.is_active }).subscribe({
+        next: () => {
+          this.snackBar.open('Product status updated', 'Close', { duration: 2000 });
+          this.loadProducts();
+        },
+        error: () => {
+          this.loading = false;
+          this.snackBar.open('Failed to update status', 'Close', { duration: 3000 });
+        }
       });
     }
   }
@@ -100,12 +145,20 @@ export class ProductManagementComponent implements OnInit {
   
   submitCSV() {
     if (this.csvFile) {
+      this.loading = true;
       const formData = new FormData();
       formData.append('file', this.csvFile);
-  
-      this.productService.uploadCSV(formData).subscribe(() => {
-        this.csvFile = null;
-        this.loadProducts(); // Refresh products after upload
+
+      this.productService.uploadCSV(formData).subscribe({
+        next: () => {
+          this.snackBar.open('CSV uploaded successfully', 'Close', { duration: 2000 });
+          this.csvFile = null;
+          this.loadProducts();
+        },
+        error: () => {
+          this.loading = false;
+          this.snackBar.open('CSV upload failed', 'Close', { duration: 3000 });
+        }
       });
     }
   }

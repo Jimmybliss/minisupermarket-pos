@@ -1,1 +1,64 @@
-<p>inventory-management works!</p>
+<div class="container">
+  <h2>Inventory Management</h2>
+
+  <!-- Inventory Overview -->
+  <button mat-raised-button color="primary" (click)="getInventoryOverview()">
+    Get Inventory Overview
+  </button>
+  <div *ngIf="inventoryOverview.length">
+    <h3>Inventory Summary</h3>
+    <ul>
+      <li *ngFor="let item of inventoryOverview">
+        <strong>{{ item.product__name }}</strong>: {{ item.total_stock }} units, 
+        Expired Batches: {{ item.expired_batches }}
+      </li>
+    </ul>
+  </div>
+
+  <!-- Inventory Table -->
+  <div class="add-inventory">
+    <h3>Add Inventory</h3>
+    <div>
+      <label>Product ID: <input type="number" [(ngModel)]="newItem.product" /></label>
+      <label>Batch #: <input type="text" [(ngModel)]="newItem.batch_number" /></label>
+      <label>Qty: <input type="number" [(ngModel)]="newItem.stock_quantity" /></label>
+      <label>Expiry: <input type="date" [(ngModel)]="newItem.expiry_date" /></label>
+      <button mat-raised-button color="primary" (click)="addInventoryItem()">Add</button>
+    </div>
+  </div>
+
+  <table mat-table [dataSource]="inventory" class="mat-elevation-z8" *ngIf="inventory?.length">
+    <ng-container matColumnDef="product">
+      <th mat-header-cell *matHeaderCellDef> Product </th>
+      <td mat-cell *matCellDef="let item"> {{ item.product.name }} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="batch_number">
+      <th mat-header-cell *matHeaderCellDef> Batch # </th>
+      <td mat-cell *matCellDef="let item"> {{ item.batch_number }} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="stock_quantity">
+      <th mat-header-cell *matHeaderCellDef> Stock </th>
+      <td mat-cell *matCellDef="let item"> {{ item.stock_quantity }} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="expiry_date">
+      <th mat-header-cell *matHeaderCellDef> Expiry Date </th>
+      <td mat-cell *matCellDef="let item" [ngClass]="{'expired': isExpired(item.expiry_date)}">
+        {{ item.expiry_date }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef> Actions </th>
+      <td mat-cell *matCellDef="let item">
+        <button mat-button color="accent" (click)="adjustStock(item.id, 1)">+1</button>
+        <button mat-button color="warn" (click)="adjustStock(item.id, -1)">-1</button>
+      </td>
+    </ng-container>
+
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns;" [ngClass]="rowClass(row)"></tr>
+  </table>
+</div>

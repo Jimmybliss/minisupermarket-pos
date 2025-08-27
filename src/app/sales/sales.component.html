@@ -1,1 +1,144 @@
-<p>sales works!</p>
+<form [formGroup]="saleForm" class="pos-container">
+  <!-- Left navigation sidebar
+  <nav class="left-sidebar" aria-label="Main navigation">
+    <div class="nav-buttons">
+      <button mat-stroked-button class="nav-btn">HOME</button>
+      <button mat-stroked-button class="nav-btn">REPORT</button>
+    </div>
+    <div class="left-bottom">
+      <button mat-stroked-button class="nav-btn">LOGOUT</button>
+    </div>
+  </nav>-->
+  <!-- Customer Section -->
+  <div class="customer-section">
+    <mat-form-field appearance="fill">
+      <mat-label>Customer Name</mat-label>
+      <input matInput formControlName="customer_name">
+      <mat-error *ngIf="saleForm.get('customer_name')?.hasError('required')">
+        Customer name is required
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Payment Method</mat-label>
+      <mat-select formControlName="payment_method">
+        <mat-option *ngFor="let method of paymentMethods" [value]="method">
+          {{ method }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  <!-- Items table temporarily commented out for layout/debugging. The original table is kept here for reference.
+
+  <div class="items-table-wrapper">
+    <table class="items-table" role="grid">
+      ... original table markup ...
+    </table>
+  </div>
+  -->
+
+  <!-- Items Table (touchscreen-friendly) -->
+  <div class="items-table-wrapper">
+    <table class="items-table" role="grid">
+      <thead>
+        <tr>
+          <th>Product</th>
+          <th>Qty</th>
+          <th>Price</th>
+          <th>Subtotal</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody formArrayName="items">
+        <tr *ngFor="let item of items.controls; let i = index" [formGroupName]="i">
+          <td class="product-cell">
+            <!-- scanner typically sends barcode + Enter; also supports typing >2 chars for suggestions -->
+            <!--<input matInput type="text" [formControlName]="'product_search'" (keyup)="onProductSearch($event,i)" (keyup.enter)="$event.preventDefault(); $event.stopPropagation(); onBarcodeEnter($event,i)" placeholder="Barcode or product name" />-->
+            <input matInput type="text" [formControlName]="'product_search'" (keyup)="onProductSearch($event,i)" placeholder="Search product" />
+            <div class="autocomplete-list" *ngIf="filteredProducts[i]?.length">
+              <div class="autocomplete-item" *ngFor="let p of filteredProducts[i]" (click)="onProductSelect(p,i)">
+                {{ p.name }} — {{ p.price | currency }}
+              </div>
+            </div>
+          </td>
+          <td class="qty-cell">
+            <input matInput type="number" formControlName="quantity" min="1" (focus)="setActiveField(i,'quantity')" />
+          </td>
+          <td class="price-cell">
+            <!-- price is display-only; not directly editable from the grid -->
+            <div class="price-display">{{ item.get('price')?.value | currency }}</div>
+          </td>
+          <td class="subtotal-cell">{{ item.get('subtotal')?.value | currency }}</td>
+          <td class="actions-cell"><button mat-icon-button color="warn" (click)="removeItem(i)" *ngIf="items.length > 1"><mat-icon>delete</mat-icon></button></td>
+        </tr>
+      </tbody>
+    </table>
+  <!-- Add-item button removed: new rows will be created when last row is interacted with -->
+  </div>
+
+  <!-- Right-side numpad -->
+  <aside class="numpad-sidebar" aria-hidden="false">
+  <div class="numpad-display">{{ getActiveValue() }}</div>
+    <div class="numpad-grid">
+      <button mat-raised-button (click)="appendNumpad('7')">7</button>
+      <button mat-raised-button (click)="appendNumpad('8')">8</button>
+      <button mat-raised-button (click)="appendNumpad('9')">9</button>
+      <button mat-raised-button (click)="appendNumpad('4')">4</button>
+      <button mat-raised-button (click)="appendNumpad('5')">5</button>
+      <button mat-raised-button (click)="appendNumpad('6')">6</button>
+      <button mat-raised-button (click)="appendNumpad('1')">1</button>
+      <button mat-raised-button (click)="appendNumpad('2')">2</button>
+      <button mat-raised-button (click)="appendNumpad('3')">3</button>
+      <button mat-raised-button (click)="appendNumpad('0')">0</button>
+      <button mat-raised-button (click)="appendNumpad('.')">.</button>
+      <button mat-raised-button color="warn" (click)="backspaceActive()">⌫</button>
+      <button mat-stroked-button color="primary" (click)="clearActive()">Clear</button>
+    </div>
+  </aside>
+
+  <!-- Totals Section (full-width) -->
+  <div class="totals-section">
+    <mat-card>
+      <mat-card-content class="card-content">
+        <div class="total-rows">
+          <div class="total-row">
+            <span>Subtotal:</span>
+            <span>{{ subtotal }}</span>
+          </div>
+          <div class="total-row">
+            <span>Tax :</span>
+            <span>{{ tax }}</span>
+          </div>
+          <div class="total-row">
+            <span>Discount:</span>
+            <mat-form-field appearance="fill" class="discount-field">
+              <input matInput 
+                     type="number" 
+                     formControlName="discount"
+                     min="0"
+                     max="100">
+              <span matSuffix>%</span>
+            </mat-form-field>
+            <span>-{{ discountAmount }}</span>
+          </div>
+          <div class="total-row grand-total">
+            <span>Total:</span>
+            <span>{{ grandTotal }}</span>
+          </div>
+        </div>
+
+        <div class="card-actions">
+          <button mat-raised-button 
+                  color="accent" 
+                  (click)="submitSale()"
+                  [disabled]="saleForm.invalid || isLoading"
+                  class="submit-btn">
+            <mat-icon>check_circle</mat-icon>
+            {{ isLoading ? 'Processing...' : 'Complete Sale' }}
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</form>

@@ -2,14 +2,29 @@
   <mat-sidenav mode="side" opened style="width: 200px; background-color: #dedede;">
     <mat-nav-list>
       <mat-list-item>
-        <a mat-button href="/#/admin/user-management">User Management</a>
+        <a mat-button href="/#/admin/user-management">User</a>
       </mat-list-item>
       <mat-list-item>
-        <a mat-button href="/#/admin/product-management">Product Management</a>
+        <a mat-button href="/#/admin/product-management">Product</a>
       </mat-list-item>
       <mat-list-item>
-        <a mat-button href="/reports">Reports</a>
+        <a mat-button href="/#/admin/transactions">Transactions</a>
       </mat-list-item>
+
+      <mat-list-item>
+        <a mat-button href="/#/admin/inventory-management">Inventory</a>
+      </mat-list-item>
+
+      <mat-list-item>
+        <a mat-button href="/#/admin/settings">Settings</a>
+      </mat-list-item>
+  
+      <mat-list-item>
+        <a mat-button href="/#/admin/logs">Activity Logs</a>
+      </mat-list-item>
+
+      <button mat-raised-button color="warn" (click)="onLogout()">Logout</button>
+
     </mat-nav-list>
   </mat-sidenav>
   <mat-sidenav-content style="padding: 1rem;">

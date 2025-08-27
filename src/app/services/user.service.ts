@@ -18,6 +18,8 @@ export class UserService {
   }
 
   getUsers(): Observable<any[]> {
+    const token = localStorage.getItem('token');  // Retrieve the token from storage
+    const headers = new HttpHeaders().set('Authorization', `Token ${token}`);
     return this.http.get<any[]>(this.apiUrl, { headers: this.getHeaders() });
   }
 
