@@ -1,29 +1,32 @@
-<mat-sidenav-container style="height: 100vh;">
-  <mat-sidenav mode="side" opened style="width: 200px; background-color: #dedede;">
+<mat-sidenav-container class="admin-shell" style="height: 100vh;">
+  <mat-sidenav mode="side" opened class="admin-sidenav">
+    <div class="brand" style="padding: 1rem; font-weight: 700;">Admin</div>
     <mat-nav-list>
       <mat-list-item>
-        <a mat-button href="/#/admin/user-management">User</a>
+        <a mat-button routerLink="user-management">Users</a>
       </mat-list-item>
       <mat-list-item>
-        <a mat-button href="/#/admin/product-management">Product</a>
+        <a mat-button routerLink="product-management">Products</a>
       </mat-list-item>
       <mat-list-item>
-        <a mat-button href="/#/admin/transactions">Transactions</a>
+        <a mat-button routerLink="transactions">Transactions</a>
       </mat-list-item>
 
       <mat-list-item>
-        <a mat-button href="/#/admin/inventory-management">Inventory</a>
+        <a mat-button routerLink="inventory-management">Inventory</a>
       </mat-list-item>
 
       <mat-list-item>
-        <a mat-button href="/#/admin/settings">Settings</a>
-      </mat-list-item>
-  
-      <mat-list-item>
-        <a mat-button href="/#/admin/logs">Activity Logs</a>
+        <a mat-button routerLink="settings">Settings</a>
       </mat-list-item>
 
-      <button mat-raised-button color="warn" (click)="onLogout()">Logout</button>
+      <mat-list-item>
+        <a mat-button routerLink="logs">Activity Logs</a>
+      </mat-list-item>
+
+      <div style="padding: 1rem;">
+        <button mat-raised-button color="warn" (click)="onLogout()">Logout</button>
+      </div>
 
     </mat-nav-list>
   </mat-sidenav>

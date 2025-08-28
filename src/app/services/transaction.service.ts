@@ -2,12 +2,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, catchError, throwError } from 'rxjs';
 import { AuthService } from './auth.service';
+import { BASE_url } from '../config';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TransactionService {
-  private apiUrl = 'http://127.0.0.1:8000/api/transactions/';
+  private apiUrl = `${BASE_url}/api/transactions/`;
 
   constructor(private http: HttpClient, private authService: AuthService) {}
 

@@ -12,20 +12,22 @@ import { SettingsComponent } from './settings/settings.component';
 import { CategoryManagementComponent } from './category-management/category-management.component';
 import { InventoryManagementComponent } from './inventory-management/inventory-management.component';
 import { SalespersonComponent } from './salesperson/salesperson.component';
+import { AdminDashboardComponent } from './admin/admin-dashboard.component';
 
 
 export const routes: Routes = [
   { path: '', component: LoginComponent }, // default route
   { path: 'login', component: LoginComponent },
   { path: 'admin', component: AdminComponent, children: [
-    {path: 'user-management', component: UserManagementComponent},
-    {path: 'product-management', component: ProductManagementComponent},
-    {path: 'category-management', component: CategoryManagementComponent},
-    {path: 'transactions', component: TransactionsComponent},
-    {path: 'logs', component: LogsComponent},
-    {path: 'settings', component: SettingsComponent},
-    {path: 'inventory-management', component: InventoryManagementComponent},
-    {path: '', redirectTo: 'user-management', pathMatch: 'full'}
+  { path: 'dashboard', component: AdminDashboardComponent },
+  { path: 'user-management', component: UserManagementComponent },
+  { path: 'product-management', component: ProductManagementComponent },
+  { path: 'category-management', component: CategoryManagementComponent },
+  { path: 'transactions', component: TransactionsComponent },
+  { path: 'logs', component: LogsComponent },
+  { path: 'settings', component: SettingsComponent },
+  { path: 'inventory-management', component: InventoryManagementComponent },
+  { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
   ]},
   //{ path: '**', redirectTo: 'admin', pathMatch: 'full'},
 
@@ -34,6 +36,7 @@ export const routes: Routes = [
     { path: '', redirectTo: 'sales', pathMatch: 'full'}
   ]},
   { path: 'supervisor', component: SupervisorComponent },
+  { path: 'inventory-management', component: InventoryManagementComponent },
   
   // add additional routes as needed
 ];

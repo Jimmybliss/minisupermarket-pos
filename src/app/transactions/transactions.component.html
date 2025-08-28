@@ -26,7 +26,7 @@
   
       <ng-container matColumnDef="amount">
         <th mat-header-cell *matHeaderCellDef> Amount </th>
-        <td mat-cell *matCellDef="let transaction"> {{ transaction.amount != null ? (transaction.amount | currency) : '—' }} </td>
+        <td mat-cell *matCellDef="let transaction"> {{ transaction.amount != null ? (transaction.amount | currency:'TZS':'symbol':'1.0-2') : '—' }} </td>
       </ng-container>
   
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>

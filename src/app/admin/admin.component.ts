@@ -1,41 +1,52 @@
 import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
 import { MatButtonModule } from '@angular/material/button';
-import { RouterOutlet } from '@angular/router';
-import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-admin',
-  imports: [ 
+  standalone: true,
+  imports: [
     CommonModule,
-    MatSidenavModule, 
+    MatSidenavModule,
     MatListModule,
     MatButtonModule,
-    RouterOutlet ],
+    RouterModule
+  ],
   templateUrl: './admin.component.html',
-  styleUrl: './admin.component.sass'
+  styleUrls: ['./admin.component.sass']
 })
 export class AdminComponent {
 
   constructor(
-    private authService: AuthService,
+    private auth: AuthService,
     private http: HttpClient,
     private router: Router
-  ){ }
+  ) { }
 
   onLogout(): void {
-    this.http.post('http://127.0.0.1:8000/api/logout/', {}).subscribe({
+    const token = this.auth.getToken();
+    if (!token) {
+      // not logged in client-side, just navigate
+      this.router.navigate(['/login']).then(() => window.location.reload());
+      return;
+    }
+
+    this.auth.logout().subscribe({
       next: () => {
-        localStorage.removeItem('auth_token'); // Remove token
-        this.router.navigate(['/login']).then(() => {
-          window.location.reload(); // Ensure fresh navigation
-        });
+        this.router.navigate(['/login']).then(() => window.location.reload());
       },
-      error: (err) => console.error('Logout failed', err)
+      error: (err) => {
+        // if unauthorized or other failure, still clear local state and redirect
+        console.error('Logout error', err);
+        this.auth.clearToken();
+        this.router.navigate(['/login']).then(() => window.location.reload());
+      }
     });
   }
 

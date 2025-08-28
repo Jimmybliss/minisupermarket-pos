@@ -5,12 +5,13 @@ import { catchError } from 'rxjs/operators';
 import { throwError } from 'rxjs';
 import { HttpHeaders } from '@angular/common/http';
 import { AuthService } from './auth.service';
+import { BASE_url } from '../config';
 
 @Injectable({
   providedIn: 'root'
 })
 export class InventoryService {
-  private apiUrl = 'http://127.0.0.1:8000/api/inventory/';
+  private apiUrl = `${BASE_url}/api/inventory/`;
 
   constructor(private http: HttpClient, private authService: AuthService) {}
 

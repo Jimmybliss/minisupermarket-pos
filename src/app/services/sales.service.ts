@@ -2,17 +2,18 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, switchMap, forkJoin,
-  catchError, throwError, tap
+  catchError, throwError, tap, map
  } from 'rxjs';
 import { HttpHeaders } from '@angular/common/http';
 import { AuthService } from './auth.service';
+import { BASE_url } from '../config';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SalesService {
   // Use same backend port as other services (8000)
-  private apiUrl = 'http://127.0.0.1:8000/api/sales/';
+  private apiUrl = `${BASE_url}/api/sales/`;
   private taxRate = 0.08; // 8% tax
 
   constructor(private http: HttpClient, private authService: AuthService) { }
@@ -86,8 +87,14 @@ export class SalesService {
   const payloadString = JSON.stringify(salePayload);
   console.debug('Creating sale with payload string:', payloadString);
 
-  return this.http.post(`${this.apiUrl}`, salePayload, { headers: this.getHeaders() }).pipe(
-    tap(response => console.log('Sale Created:', response)),
+  return this.http.post(`${this.apiUrl}`, salePayload, { headers: this.getHeaders(), observe: 'response' as 'response' }).pipe(
+    tap((response: any) => console.log('Sale Created (raw response):', response.status, response.headers, response.body)),
+    map((response: any) => {
+      // If backend returns a JSON body, return it; otherwise return a safe fallback object
+      if (response && response.body) return response.body;
+      const location = response?.headers?.get ? response.headers.get('Location') : null;
+      return { id: location || null, total: salePayload.total };
+    }),
     catchError((error: any) => {
       // Preserve original HttpErrorResponse so component can inspect status and body
       console.error('Error processing sale (rethrowing):', error);

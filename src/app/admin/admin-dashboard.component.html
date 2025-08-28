@@ -1,0 +1,37 @@
+<div class="admin-dashboard">
+  <div class="kpi-row">
+    <mat-card class="kpi-card">
+      <div class="kpi-title">Total Users</div>
+      <div class="kpi-value">
+        <mat-spinner *ngIf="isLoading" diameter="24"></mat-spinner>
+        <span *ngIf="!isLoading">{{ totalUsers ?? '—' }}</span>
+      </div>
+    </mat-card>
+    <mat-card class="kpi-card">
+      <div class="kpi-title">Products</div>
+      <div class="kpi-value">
+        <mat-spinner *ngIf="isLoading" diameter="24"></mat-spinner>
+        <span *ngIf="!isLoading">{{ totalProducts ?? '—' }}</span>
+      </div>
+    </mat-card>
+    <mat-card class="kpi-card">
+      <div class="kpi-title">Low Stock</div>
+      <div class="kpi-value">
+        <mat-spinner *ngIf="isLoading" diameter="24"></mat-spinner>
+        <span *ngIf="!isLoading">{{ lowStockCount ?? '—' }}</span>
+      </div>
+    </mat-card>
+  </div>
+
+  <div class="panels">
+    <mat-card class="panel">
+      <h3>Recent Activity</h3>
+      <p class="muted">No activity yet</p>
+    </mat-card>
+    <mat-card class="panel small">
+      <h3>Quick Links</h3>
+      <button mat-button routerLink="user-management">Users</button>
+      <button mat-button routerLink="product-management">Products</button>
+    </mat-card>
+  </div>
+</div>

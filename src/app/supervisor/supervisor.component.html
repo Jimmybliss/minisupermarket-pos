@@ -7,30 +7,255 @@
           <mat-list-item (click)="setView('sales')">Sales Monitoring</mat-list-item>
           <mat-list-item (click)="setView('cashiers')">Cashier Management</mat-list-item>
           <mat-list-item (click)="setView('inventory')">Stock Alerts</mat-list-item>
+          <mat-list-item (click)="setView('inventoryManagement')">Inventory Management</mat-list-item>
+          <mat-list-item (click)="setView('productManagement')">Product Management</mat-list-item>
           <mat-list-item (click)="setView('reports')">Reports & Analytics</mat-list-item>
+          <div style="padding:1rem;">
+            <button mat-raised-button color="warn" (click)="onLogout()">Logout</button>
+          </div>
         </mat-nav-list>
       </mat-sidenav>
   
       <!-- Main Content -->
       <mat-sidenav-content class="content">
         <ng-container *ngIf="view === 'dashboard'">
-         
+          <div class="time-controls">
+              <button mat-stroked-button (click)="timeRange='today'; filterSalesByTime()">Today</button>
+              <button mat-stroked-button color="primary" (click)="timeRange='7d'; filterSalesByTime()">7d</button>
+              <button mat-stroked-button (click)="timeRange='30d'; filterSalesByTime()">30d</button>
+              <button mat-stroked-button (click)="timeRange='all'; filterSalesByTime()">All</button>
+            </div>
+            <div class="dashboard-grid">
+            
+            <mat-card class="kpi-card">
+              <mat-card-title>Low Stock Items</mat-card-title>
+              <mat-card-content>
+                <div class="kpi-value">{{ lowStock.length || 0 }}</div>
+                <div class="muted">items below threshold</div>
+              </mat-card-content>
+            </mat-card>
+
+            <mat-card class="kpi-card">
+              <mat-card-title>Recent Transactions ({{ timeRange }})</mat-card-title>
+              <mat-card-content>
+                <div class="kpi-value">{{ recentTransactions.length || 0 }}</div>
+                <div class="muted">last fetched</div>
+              </mat-card-content>
+            </mat-card>
+
+            <mat-card class="kpi-card">
+              <mat-card-title>Recent Sales ({{ timeRange }})</mat-card-title>
+              <mat-card-content>
+                <div class="kpi-value">{{ recentSales.length || 0 }}</div>
+                <div class="muted">last fetched</div>
+              </mat-card-content>
+            </mat-card>
+          </div>
+
+          <section class="panels">
+            <mat-card class="panel">
+              <mat-card-title>Low Stock</mat-card-title>
+              <mat-card-content>
+                <table mat-table [dataSource]="lowStock" class="mat-elevation-z2">
+                  <ng-container matColumnDef="product">
+                    <th mat-header-cell *matHeaderCellDef> Product </th>
+                    <td mat-cell *matCellDef="let row">{{ row.product?.name || row.product }}</td>
+                  </ng-container>
+                  <ng-container matColumnDef="qty">
+                    <th mat-header-cell *matHeaderCellDef> Qty </th>
+                    <td mat-cell *matCellDef="let row">{{ row.stock_quantity }}</td>
+                  </ng-container>
+                  <ng-container matColumnDef="actions">
+                    <th mat-header-cell *matHeaderCellDef> Actions </th>
+                    <td mat-cell *matCellDef="let row">
+                      <button mat-button color="primary" (click)="router.navigate(['/inventory-management'], { queryParams: { product: (row.product?.id || row.product) } })">Manage</button>
+                    </td>
+                  </ng-container>
+
+                  <tr mat-header-row *matHeaderRowDef="['product','qty','actions']"></tr>
+                  <tr mat-row *matRowDef="let row; columns: ['product','qty','actions'];"></tr>
+                </table>
+                <div *ngIf="!lowStock || lowStock.length === 0" class="muted">No low stock items</div>
+              </mat-card-content>
+            </mat-card>
+
+            <mat-card class="panel">
+              <mat-card-title>Recent Transactions</mat-card-title>
+              <mat-card-content>
+                <ul>
+                  <li *ngFor="let t of recentTransactions | slice:0:4" class="recent-tx-item">
+                    <span class="tx-type">{{ txLabel(t) }}</span>
+                    <span class="tx-time">{{ t.date | date:'short' }}</span>
+                  </li>
+                </ul>
+                <div *ngIf="!recentTransactions || recentTransactions.length === 0" class="muted">No recent transactions</div>
+              </mat-card-content>
+            </mat-card>
+
+            <mat-card class="panel">
+              <mat-card-title>Recent Sales</mat-card-title>
+              <mat-card-content>
+                <ul>
+                  <li *ngFor="let s of recentSales">{{ s.date | date:'short' }} — {{ s.total | currency:'TZS' }}</li>
+                </ul>
+                <div *ngIf="!recentSales || recentSales.length === 0" class="muted">No recent sales</div>
+              </mat-card-content>
+            </mat-card>
+          </section>
         </ng-container>
   
         <ng-container *ngIf="view === 'sales'">
-          
+          <div>
+            <h2>Sales Monitoring</h2>
+            <div *ngIf="isLoading">Loading…</div>
+            <table mat-table [dataSource]="salesList" class="mat-elevation-z2" *ngIf="!isLoading && salesList.length">
+              <ng-container matColumnDef="date">
+                <th mat-header-cell *matHeaderCellDef>Date</th>
+                <td mat-cell *matCellDef="let s">{{ s.date | date:'short' }}</td>
+              </ng-container>
+              <ng-container matColumnDef="amount">
+                <th mat-header-cell *matHeaderCellDef>Amount</th>
+                <td mat-cell *matCellDef="let s">{{ s.amount | currency:'TZS' }}</td>
+              </ng-container>
+              <ng-container matColumnDef="ref">
+                <th mat-header-cell *matHeaderCellDef>Ref</th>
+                <td mat-cell *matCellDef="let s">{{ s.reference || s.id }}</td>
+              </ng-container>
+              <tr mat-header-row *matHeaderRowDef="['date','amount','ref']"></tr>
+              <tr mat-row *matRowDef="let row; columns: ['date','amount','ref'];"></tr>
+            </table>
+            <div *ngIf="!isLoading && !salesList.length" class="muted">No sales found</div>
+          </div>
         </ng-container>
   
         <ng-container *ngIf="view === 'cashiers'">
-          
+          <div>
+            <h2>Cashier Management</h2>
+            <div *ngIf="isLoading">Loading…</div>
+            <ul *ngIf="!isLoading && cashiers.length">
+              <li *ngFor="let c of cashiers">{{ c.username || c.email || c.name }} — <span class="muted">{{ c.role || c.groups || 'cashier' }}</span></li>
+            </ul>
+            <div *ngIf="!isLoading && !cashiers.length" class="muted">No cashiers found</div>
+          </div>
         </ng-container>
   
-        <ng-container *ngIf="view === 'inventory'">
-         
+  <ng-container *ngIf="view === 'inventory'">
+          <div>
+            <h2>Stock Alerts</h2>
+            <div *ngIf="isLoading">Loading…</div>
+
+            <!-- Quick add inventory form (batch number and expiry included) -->
+            <div class="quick-add-inventory">
+              <input placeholder="product id" #quickProductId>
+              <input placeholder="quantity" type="number" #quickQty>
+              <input placeholder="batch number" #quickBatch>
+              <input placeholder="expiry date" type="date" #quickExpiry>
+              <button mat-stroked-button (click)="addInventory($event, { product: quickProductId.value, stock_quantity: quickQty.value, batch_number: quickBatch.value, expiry_date: quickExpiry.value })">Add Inventory</button>
+              <button mat-stroked-button color="primary" (click)="router.navigate(['/admin/inventory-management'])">Open Inventory Manager</button>
+            </div>
+
+            <table mat-table [dataSource]="inventoryList" class="mat-elevation-z2" *ngIf="!isLoading && inventoryList.length">
+              <ng-container matColumnDef="product">
+                <th mat-header-cell *matHeaderCellDef>Product</th>
+                <td mat-cell *matCellDef="let i">{{ i.product?.name || i.product }}</td>
+              </ng-container>
+              <ng-container matColumnDef="qty">
+                <th mat-header-cell *matHeaderCellDef>Qty</th>
+                <td mat-cell *matCellDef="let i">{{ i.stock_quantity }}</td>
+              </ng-container>
+              <tr mat-header-row *matHeaderRowDef="['product','qty']"></tr>
+              <tr mat-row *matRowDef="let row; columns: ['product','qty'];"></tr>
+            </table>
+            <div *ngIf="!isLoading && !inventoryList.length" class="muted">No inventory items found</div>
+          </div>
+        </ng-container>
+
+        <ng-container *ngIf="view === 'inventoryManagement'">
+          <app-inventory-management></app-inventory-management>
+        </ng-container>
+
+        <ng-container *ngIf="view === 'inventoryManagement'">
+          <div>
+            <h2>Inventory Management</h2>
+            <div *ngIf="isLoading">Loading…</div>
+            <form>
+              <input placeholder="product id" name="product" #newInventoryProduct>
+              <input placeholder="quantity" name="quantity" #newInventoryQty>
+              <button mat-button type="button" (click)="addInventory($event, { product: newInventoryProduct.value, stock_quantity: newInventoryQty.value })">Add Inventory</button>
+            </form>
+
+            <table mat-table [dataSource]="inventoryList" class="mat-elevation-z2" *ngIf="!isLoading && inventoryList.length">
+              <ng-container matColumnDef="product">
+                <th mat-header-cell *matHeaderCellDef>Product</th>
+                <td mat-cell *matCellDef="let i">{{ i.product?.name || i.product }}</td>
+              </ng-container>
+              <ng-container matColumnDef="qty">
+                <th mat-header-cell *matHeaderCellDef>Qty</th>
+                <td mat-cell *matCellDef="let i">{{ i.stock_quantity }}</td>
+              </ng-container>
+              <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef>Actions</th>
+                <td mat-cell *matCellDef="let i">
+                  <button mat-button (click)="adjustStock(i.id, 1)">+1</button>
+                  <button mat-button (click)="adjustStock(i.id, -1)">-1</button>
+                </td>
+              </ng-container>
+              <tr mat-header-row *matHeaderRowDef="['product','qty','actions']"></tr>
+              <tr mat-row *matRowDef="let row; columns: ['product','qty','actions'];"></tr>
+            </table>
+            <div *ngIf="!isLoading && !inventoryList.length" class="muted">No inventory items found</div>
+          </div>
+        </ng-container>
+
+        <ng-container *ngIf="view === 'productManagement'">
+          <div>
+            <h2>Product Management</h2>
+            <div *ngIf="isLoading">Loading…</div>
+            <div>
+              <button mat-stroked-button (click)="loadProducts()">Reload Products</button>
+            </div>
+            <table mat-table [dataSource]="products" class="mat-elevation-z2" *ngIf="!isLoading && products?.length">
+              <ng-container matColumnDef="name">
+                <th mat-header-cell *matHeaderCellDef>Name</th>
+                <td mat-cell *matCellDef="let p">{{ p.name }}</td>
+              </ng-container>
+              <ng-container matColumnDef="sku">
+                <th mat-header-cell *matHeaderCellDef>SKU</th>
+                <td mat-cell *matCellDef="let p">{{ p.sku || p.id }}</td>
+              </ng-container>
+              <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef>Actions</th>
+                <td mat-cell *matCellDef="let p">
+                  <button mat-button color="warn" (click)="deleteProduct(p.id)">Delete</button>
+                </td>
+              </ng-container>
+              <tr mat-header-row *matHeaderRowDef="['name','sku','actions']"></tr>
+              <tr mat-row *matRowDef="let row; columns: ['name','sku','actions'];"></tr>
+            </table>
+            <div *ngIf="!isLoading && (!products || !products.length)" class="muted">No products found</div>
+          </div>
         </ng-container>
   
         <ng-container *ngIf="view === 'reports'">
-          
+          <div>
+            <h2>Reports & Analytics</h2>
+            <div class="time-controls">
+              <button mat-stroked-button (click)="loadReports('7d')" [class.active]="chartRange==='7d'">7d</button>
+              <button mat-stroked-button (click)="loadReports('30d')" [class.active]="chartRange==='30d'">30d</button>
+              <button mat-stroked-button (click)="loadReports('90d')" [class.active]="chartRange==='90d'">90d</button>
+              <button mat-stroked-button (click)="loadReports('all')" [class.active]="chartRange==='all'">All</button>
+            </div>
+
+            <div style="height:300px; margin-top:12px;">
+              <canvas #reportsChart></canvas>
+            </div>
+
+            <div *ngIf="isLoading">Loading…</div>
+            <div *ngIf="!isLoading">
+              <p>Total Transactions: {{ reportSummary.totalTransactions }}</p>
+              <p>Total Sales (TZS): {{ reportSummary.totalSales | currency:'TZS' }}</p>
+            </div>
+          </div>
         </ng-container>
       </mat-sidenav-content>
     </mat-sidenav-container>

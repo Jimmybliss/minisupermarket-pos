@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { UserService } from '../services/user.service';
+import { BASE_url } from '../config';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../services/auth.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
@@ -33,7 +34,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 })
 
 export class UserManagementComponent implements OnInit {
-  private BaseUrl = 'http://127.0.0.1:8000/api/users/';
+  private BaseUrl = `${BASE_url}/api/users/`;
   users: any[] = [];
   newUser = { username: '', email: '', password: '', role: '' };
   selectedUser: any = null;

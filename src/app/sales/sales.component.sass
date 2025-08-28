@@ -108,6 +108,13 @@ th
   max-height: none
   min-height: 0
 
+.items-section
+  grid-column: 1 / 2
+  grid-row: 2 / 3
+  overflow-y: auto
+  min-height: 0
+  padding-right: 8px
+
 .items-table
   width: 100%
   border-collapse: collapse
@@ -270,8 +277,9 @@ th, td
   // keep the numpad visible and fixed alongside the content
   position: sticky
   top: 0
-  // reserve space for header/footer; reduces overlap with sticky footer
-  max-height: calc(100% - 140px)
+  grid-column: 2 / 3
+  grid-row: 1 / 3
+  max-height: calc(100% - 120px)
 
 .numpad-display
   font-size: 1.6rem

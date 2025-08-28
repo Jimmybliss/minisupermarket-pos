@@ -19,7 +19,7 @@
 
   <!--Category Management-->
   <div class="upload-section">
-    <button mat-raised-button color="primary" href="/#/admin/category-management">
+    <button mat-raised-button color="primary" routerLink="/admin/category-management">
       Category Management
     </button>
   </div>
@@ -48,7 +48,7 @@
 
     <ng-container matColumnDef="price">
       <th mat-header-cell *matHeaderCellDef> price </th>
-      <td mat-cell *matCellDef="let product"> {{ product.price }} </td>
+      <td mat-cell *matCellDef="let product"> {{ product.price | currency:'TZS':'symbol':'1.0-2' }} </td>
     </ng-container>
 
     <ng-container matColumnDef="barcode">

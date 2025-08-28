@@ -18,33 +18,70 @@
   <!-- Inventory Table -->
   <div class="add-inventory">
     <h3>Add Inventory</h3>
-    <div>
-      <label>Product ID: <input type="number" [(ngModel)]="newItem.product" /></label>
-      <label>Batch #: <input type="text" [(ngModel)]="newItem.batch_number" /></label>
-      <label>Qty: <input type="number" [(ngModel)]="newItem.stock_quantity" /></label>
-      <label>Expiry: <input type="date" [(ngModel)]="newItem.expiry_date" /></label>
-      <button mat-raised-button color="primary" (click)="addInventoryItem()">Add</button>
+    <div class="add-grid">
+      <mat-form-field appearance="fill" class="full">
+        <mat-label>Product</mat-label>
+        <input matInput [(ngModel)]="newProductName" (input)="filterProducts(newProductName)" [matAutocomplete]="prodAuto">
+        <mat-autocomplete #prodAuto="matAutocomplete" (optionSelected)="selectProduct($event.option.value)">
+          <mat-option *ngFor="let p of filteredProducts" [value]="p">
+            {{ p.name }} (ID: {{ p.id }})
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Batch #</mat-label>
+        <input matInput type="text" [(ngModel)]="newItem.batch_number">
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Qty</mat-label>
+        <input matInput type="number" [(ngModel)]="newItem.stock_quantity">
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Expiry</mat-label>
+        <input matInput [matDatepicker]="expiryPicker" [(ngModel)]="newItem.expiry_date">
+        <mat-datepicker-toggle matSuffix [for]="expiryPicker"></mat-datepicker-toggle>
+        <mat-datepicker #expiryPicker></mat-datepicker>
+      </mat-form-field>
+
+      <div class="actions">
+        <button mat-raised-button color="primary" (click)="addInventoryItem()">Add</button>
+      </div>
     </div>
   </div>
 
   <table mat-table [dataSource]="inventory" class="mat-elevation-z8" *ngIf="inventory?.length">
     <ng-container matColumnDef="product">
-      <th mat-header-cell *matHeaderCellDef> Product </th>
-      <td mat-cell *matCellDef="let item"> {{ item.product.name }} </td>
+      <th mat-header-cell *matHeaderCellDef>
+        Product
+        <button mat-button class="sort-btn" (click)="sortBy('product_name')">Sort {{ sortIndicator('product_name') }}</button>
+      </th>
+      <td mat-cell *matCellDef="let item"> {{ item.product_name }} </td>
     </ng-container>
 
     <ng-container matColumnDef="batch_number">
-      <th mat-header-cell *matHeaderCellDef> Batch # </th>
+      <th mat-header-cell *matHeaderCellDef>
+        Batch #
+        <button mat-button class="sort-btn" (click)="sortBy('batch_number')">Sort {{ sortIndicator('batch_number') }}</button>
+      </th>
       <td mat-cell *matCellDef="let item"> {{ item.batch_number }} </td>
     </ng-container>
 
     <ng-container matColumnDef="stock_quantity">
-      <th mat-header-cell *matHeaderCellDef> Stock </th>
+      <th mat-header-cell *matHeaderCellDef>
+        Stock
+        <button mat-button class="sort-btn" (click)="sortBy('stock_quantity')">Sort {{ sortIndicator('stock_quantity') }}</button>
+      </th>
       <td mat-cell *matCellDef="let item"> {{ item.stock_quantity }} </td>
     </ng-container>
 
     <ng-container matColumnDef="expiry_date">
-      <th mat-header-cell *matHeaderCellDef> Expiry Date </th>
+      <th mat-header-cell *matHeaderCellDef>
+        Expiry Date
+        <button mat-button class="sort-btn" (click)="sortBy('expiry_date')">Sort {{ sortIndicator('expiry_date') }}</button>
+      </th>
       <td mat-cell *matCellDef="let item" [ngClass]="{'expired': isExpired(item.expiry_date)}">
         {{ item.expiry_date }}
       </td>

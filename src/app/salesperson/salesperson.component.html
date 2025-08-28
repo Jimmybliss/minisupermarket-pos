@@ -11,14 +11,17 @@
     </div>
   </nav>-->
     <mat-sidenav-container style="height: 100vh;">
-      <mat-sidenav mode="side" opened style="width: 200px; background-color: #dedede;"> 
+        <mat-sidenav mode="side" opened style="width: 200px; background-color: #dedede;"> 
         <mat-nav-list>
             <mat-list-item>
-                <a mat-button href="/#/salesperson/sales">Sales</a>
+                <a mat-button routerLink="sales">Sales</a>
             </mat-list-item>
             <mat-list-item>
-                <a mat-button href="/#/salesperson/reports">Reports</a>
+                <a mat-button routerLink="reports">Reports</a>
               </mat-list-item>
+            <div style="padding:1rem;">
+              <button mat-raised-button color="warn" (click)="logout()">Logout</button>
+            </div>
         </mat-nav-list>
       </mat-sidenav>
   

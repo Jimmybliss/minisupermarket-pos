@@ -1,0 +1,102 @@
+// Supervisor dashboard styles
+.supervisor-container
+	height: 90vh
+	display: flex
+	flex-direction: column
+	// ensure the material sidenav container stretches to fill
+	mat-sidenav-container
+		height: 100%
+		display: block
+
+.supervisor-container
+	mat-sidenav-content.content, .supervisor-container .content
+		height: 100%
+		overflow: auto
+
+
+.dashboard-grid
+	display: grid
+	grid-template-columns: 1fr 1fr 1fr
+	gap: 16px
+	align-items: start
+	margin-bottom: 20px
+	.kpi-card
+		min-height: 110px
+		display: flex
+		flex-direction: column
+		justify-content: center
+		align-items: flex-start
+		.kpi-value
+			font-family: 'Georgia', 'Times New Roman', serif
+			color: #112233
+			letter-spacing: 0.5px
+		.muted
+			color: #556
+
+.time-controls
+	grid-column: 1 / 2
+	display: flex
+	gap: 8px
+	align-items: center
+
+.kpi-card
+	display: flex
+	flex-direction: column
+	justify-content: center
+	align-items: flex-start
+	padding: 12px
+	.kpi-value
+		font-size: 28px
+		font-weight: 600
+		margin-bottom: 6px
+	.muted
+		color: #666
+		font-size: 12px
+
+.panels
+	display: grid
+	grid-template-columns: 2fr 1fr 1fr
+	gap: 16px
+	min-height: 220px
+
+.panel
+	padding: 8px
+	.mat-card-title
+		font-weight: 600
+	// let panel content scroll if it's long
+	.mat-card-content
+		max-height: 60vh
+		overflow: auto
+		.table
+			width: 100%
+			border-collapse: collapse
+			& th, & td
+				padding: 8px 10px
+				text-align: left
+			& tr:nth-child(odd)
+				background: rgba(0,0,0,0.02)
+			& tr.total-row
+				font-weight: 700
+				background: rgba(17,34,51,0.03)
+				border-top: 2px solid rgba(17,34,51,0.06)
+
+.recent-tx-item
+	display: flex
+	justify-content: space-between
+	padding: 6px 0
+	border-bottom: 1px solid rgba(0,0,0,0.04)
+
+.tx-type
+	font-weight: 600
+	color: #333
+
+.tx-time
+	color: #777
+	font-size: 12px
+
+@media (max-width: 900px)
+	.dashboard-grid
+		grid-template-columns: 1fr
+	.panels
+		grid-template-columns: 1fr
+

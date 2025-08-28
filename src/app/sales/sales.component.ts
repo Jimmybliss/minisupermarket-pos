@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { finalize } from 'rxjs/operators';
 import { FormBuilder, FormGroup, FormArray, Validators, AbstractControl } from '@angular/forms';
 import { ProductService } from '../services/product.service';
 import { SalesService } from '../services/sales.service';
@@ -61,9 +62,11 @@ export class SalesComponent implements OnInit {
   searching = false;
   showProductList: boolean[] = [];
   selectedProducts: any[] = [];
-  initialRows = 8; // number of empty rows to show in the table by default
+  initialRows = 1; // number of empty rows to show in the table by default
   // numpad / touchscreen helpers
   activeField: { index: number; field: 'quantity' | 'price' } | null = null;
+  // track whether a field has been edited by the numpad (so first key replaces default)
+  inputTouched: { [key: string]: boolean } = {};
 
   get items(): FormArray {
     return this.saleForm.get('items') as FormArray;
@@ -214,27 +217,46 @@ export class SalesComponent implements OnInit {
     if (index === this.items.length - 1) {
       this.addItem();
     }
+  // mark this field as not yet touched by the numpad (first press should replace)
+  this.inputTouched[`${index}-${field}`] = false;
   }
 
   appendNumpad(value: string): void {
     if (!this.activeField) return;
     const ctrl = this.items.at(this.activeField.index).get(this.activeField.field as string as any);
     if (!ctrl) return;
-    const cur = ctrl.value != null ? String(ctrl.value) : '';
-    // prevent multiple leading zeros
-    let next = cur === '0' && value !== '.' ? value : cur + value;
-    // allow single decimal point
-    if (value === '.' && cur.includes('.')) return;
-    if (this.activeField.field === 'quantity') {
-      // quantity should be integer
-      next = next.replace(/[^0-9]/g, '');
-      const num = next === '' ? 0 : parseInt(next, 10);
-      ctrl.patchValue(num);
+    const key = `${this.activeField.index}-${this.activeField.field}`;
+    const touched = !!this.inputTouched[key];
+
+    if (!touched) {
+      // first numpad press replaces the current default value
+      if (this.activeField.field === 'quantity') {
+        const num = parseInt(value.replace(/[^0-9]/g, ''), 10) || 0;
+        ctrl.patchValue(num);
+      } else {
+        // price: allow decimal or integer
+        const cleaned = value.replace(/[^0-9.]/g, '');
+        const num = cleaned === '' ? 0 : parseFloat(cleaned);
+        ctrl.patchValue(num);
+      }
+      this.inputTouched[key] = true;
     } else {
-      // price allow decimals
-      next = next.replace(/[^0-9.]/g, '');
-      const num = next === '' ? 0 : parseFloat(next);
-      ctrl.patchValue(num);
+      const cur = ctrl.value != null ? String(ctrl.value) : '';
+      // prevent multiple leading zeros
+      let next = cur === '0' && value !== '.' ? value : cur + value;
+      // allow single decimal point
+      if (value === '.' && cur.includes('.')) return;
+      if (this.activeField.field === 'quantity') {
+        // quantity should be integer
+        next = next.replace(/[^0-9]/g, '');
+        const num = next === '' ? 0 : parseInt(next, 10);
+        ctrl.patchValue(num);
+      } else {
+        // price allow decimals
+        next = next.replace(/[^0-9.]/g, '');
+        const num = next === '' ? 0 : parseFloat(next);
+        ctrl.patchValue(num);
+      }
     }
     this.updateSubtotal(this.activeField.index);
   }
@@ -252,6 +274,9 @@ export class SalesComponent implements OnInit {
       const num = next === '' ? 0 : parseFloat(next);
       ctrl.patchValue(isNaN(num) ? 0 : num);
     }
+  // mark field as touched if we removed characters
+  const key = `${this.activeField.index}-${this.activeField.field}`;
+  this.inputTouched[key] = true;
     this.updateSubtotal(this.activeField.index);
   }
 
@@ -261,6 +286,9 @@ export class SalesComponent implements OnInit {
     if (!ctrl) return;
     ctrl.patchValue(0);
     this.updateSubtotal(this.activeField.index);
+  // reset touched flag so next key replaces
+  const key = `${this.activeField.index}-${this.activeField.field}`;
+  this.inputTouched[key] = false;
   }
 
   getActiveValue(): string {
@@ -285,12 +313,7 @@ export class SalesComponent implements OnInit {
   }
 
   submitSale(): void {
-    if (this.saleForm.invalid) {
-      console.warn('Form is invalid:', this.saleForm.errors);
-      this.markFormGroupTouched(this.saleForm);
-      return;
-    }
-
+    // prepare payload first — ignore trailing empty placeholder rows so they don't block submission
     const payload = this.prepareSalePayload();
     if (!payload) {
       alert('Please add at least one product before submitting the sale.');
@@ -302,21 +325,45 @@ export class SalesComponent implements OnInit {
     }
 
     this.isLoading = true;
-    this.salesService.createSale(payload).subscribe({
-      next: (response: SaleResponse) => {
+    console.debug('Submitting sale payload', payload);
+    this.salesService.createSale(payload).pipe(
+      finalize(() => {
+        // always clear loading flag when observable completes/errors
         this.isLoading = false;
-        this.handleSuccessfulSale(response);
+        console.debug('submitSale: finalized, isLoading set to false');
+      })
+    ).subscribe({
+      next: (httpResp: any) => {
+        // service now returns full HttpResponse; extract body if present
+        console.debug('submitSale: raw http response', httpResp && httpResp.status);
+        const responseBody = httpResp && (httpResp.body ?? httpResp);
+        console.debug('submitSale: response body', responseBody);
+        this.handleSuccessfulSale(responseBody as SaleResponse);
       },
       error: (err: any) => {
         this.isLoading = false;
-  // log full error for debugging
-  console.dir(err);
-  const serverBody = err?.error;
-  const serverMessage = (serverBody && (serverBody.message || serverBody.detail || JSON.stringify(serverBody))) || err?.message || 'Failed to complete sale transaction';
-  console.error('Sale failed:', err);
-  alert(`Sale failed: ${serverMessage}`);
+        // log full error for debugging
+        console.dir(err);
+        const serverBody = err?.error;
+        const serverMessage = (serverBody && (serverBody.message || serverBody.detail || JSON.stringify(serverBody))) || err?.message || 'Failed to complete sale transaction';
+        console.error('Sale failed:', err);
+        alert(`Sale failed: ${serverMessage}`);
       }
     });
+  }
+
+  /**
+   * Returns true when the form has at least one valid sale item and we're not already loading.
+   * This lets us ignore the trailing placeholder row when deciding whether the UI may submit.
+   */
+  canSubmit(): boolean {
+    if (this.isLoading) return false;
+    try {
+      const payload = this.prepareSalePayload();
+      return !!payload;
+    } catch (e) {
+      return false;
+    }
   }
 
   private prepareSalePayload(): SaleData | null {

@@ -2,13 +2,14 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { AuthService } from './auth.service';
+import { BASE_url } from '../config';
 
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserService {
-  private apiUrl = 'http://127.0.0.1:8000/api/users/';
+  private apiUrl = `${BASE_url}/api/users/`;
 
   constructor(private http: HttpClient, private authService: AuthService) { }
 
@@ -18,9 +19,8 @@ export class UserService {
   }
 
   getUsers(): Observable<any[]> {
-    const token = localStorage.getItem('token');  // Retrieve the token from storage
-    const headers = new HttpHeaders().set('Authorization', `Token ${token}`);
-    return this.http.get<any[]>(this.apiUrl, { headers: this.getHeaders() });
+  // prefer AuthService for token access; getHeaders() already uses AuthService
+  return this.http.get<any[]>(this.apiUrl, { headers: this.getHeaders() });
   }
 
   createUser(userData: any): Observable<any> {

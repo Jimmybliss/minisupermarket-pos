@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { BASE_url } from '../config';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SettingsService {
-  private apiUrl = 'http://127.0.0.1:8000/api/settings/';
+  private apiUrl = `${BASE_url}/api/settings/`;
 
   constructor(private http: HttpClient) {}
 
