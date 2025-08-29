@@ -9,7 +9,7 @@ import { BASE_url } from '../config';
   providedIn: 'root'
 })
 export class CategoryService {
-  private apiUrl = `${BASE_url}/api/categories/`;
+  private apiUrl = `${BASE_url}/categories/`;
 
   constructor(private http: HttpClient) {}
 

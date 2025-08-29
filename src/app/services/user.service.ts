@@ -9,7 +9,7 @@ import { BASE_url } from '../config';
   providedIn: 'root'
 })
 export class UserService {
-  private apiUrl = `${BASE_url}/api/users/`;
+  private apiUrl = `${BASE_url}/users/`;
 
   constructor(private http: HttpClient, private authService: AuthService) { }
 

@@ -13,7 +13,7 @@ import { BASE_url } from '../config';
 })
 export class SalesService {
   // Use same backend port as other services (8000)
-  private apiUrl = `${BASE_url}/api/sales/`;
+  private apiUrl = `${BASE_url}/sales/`;
   private taxRate = 0.08; // 8% tax
 
   constructor(private http: HttpClient, private authService: AuthService) { }

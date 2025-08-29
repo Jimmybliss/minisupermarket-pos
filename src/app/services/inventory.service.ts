@@ -11,7 +11,7 @@ import { BASE_url } from '../config';
   providedIn: 'root'
 })
 export class InventoryService {
-  private apiUrl = `${BASE_url}/api/inventory/`;
+  private apiUrl = `${BASE_url}/inventory/`;
 
   constructor(private http: HttpClient, private authService: AuthService) {}
 

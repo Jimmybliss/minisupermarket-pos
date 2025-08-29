@@ -57,7 +57,7 @@ export class LogsComponent implements OnInit {
 
   fetchLogs() {
     const headers = this.getAuthHeaders();
-  this.http.get<any[]>(`${BASE_url}/api/activity_logs/`, { headers }).subscribe({
+  this.http.get<any[]>(`${BASE_url}/activity_logs/`, { headers }).subscribe({
       next: (data) => {
         this.logs = data;
         this.filteredLogs = data;
@@ -79,7 +79,7 @@ export class LogsComponent implements OnInit {
 
   exportLogs() {
     const headers = this.getAuthHeaders();
-  const url = `${BASE_url}/api/activity_logs/export_csv/`;
+  const url = `${BASE_url}/activity_logs/export_csv/`;
     // Fetch CSV as blob with auth header, then open in new tab
     this.http.get(url, { headers, responseType: 'blob' }).subscribe({
       next: (blob) => {
@@ -95,7 +95,7 @@ export class LogsComponent implements OnInit {
 
   clearLogs() {
     const headers = this.getAuthHeaders();
-  const url = `${BASE_url}/api/activity_logs/clear_logs/?days=30`;
+  const url = `${BASE_url}/activity_logs/clear_logs/?days=30`;
   this.http.delete(url, { headers }).subscribe({
       next: () => this.fetchLogs(),
       error: (err) => {

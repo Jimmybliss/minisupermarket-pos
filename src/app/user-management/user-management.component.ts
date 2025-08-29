@@ -34,7 +34,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 })
 
 export class UserManagementComponent implements OnInit {
-  private BaseUrl = `${BASE_url}/api/users/`;
+  private BaseUrl = `${BASE_url}/users/`;
   users: any[] = [];
   newUser = { username: '', email: '', password: '', role: '' };
   selectedUser: any = null;

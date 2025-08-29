@@ -7,7 +7,7 @@ import { BASE_url } from '../config';
   providedIn: 'root'
 })
 export class SettingsService {
-  private apiUrl = `${BASE_url}/api/settings/`;
+  private apiUrl = `${BASE_url}/settings/`;
 
   constructor(private http: HttpClient) {}
 

@@ -8,7 +8,7 @@ import { BASE_url } from '../config';
   providedIn: 'root'
 })
 export class TransactionService {
-  private apiUrl = `${BASE_url}/api/transactions/`;
+  private apiUrl = `${BASE_url}/transactions/`;
 
   constructor(private http: HttpClient, private authService: AuthService) {}
 
